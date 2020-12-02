@@ -1,0 +1,513 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Schema escola
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema escola
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `escola` DEFAULT CHARACTER SET utf8 ;
+USE `escola` ;
+
+
+-- -----------------------------------------------------
+-- Table `escola`.`graduação`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `escola`.`graduação` (
+  `ID_graduacao` INT(11) NOT NULL,
+  `Nome` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`ID_graduacao`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `escola`.`aluno`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `escola`.`aluno` (
+  `Matrícula` INT(11) NOT NULL,
+  `Nome` VARCHAR(45) NOT NULL,
+  `Estagio` VARCHAR(20) NOT NULL,
+  `ID_Graduação` INT(11) NOT NULL,
+  PRIMARY KEY (`Matrícula`),
+  INDEX `Fk_graduaçao_idx` (`ID_Graduação` ASC) VISIBLE,
+  CONSTRAINT `Fk_graduaçao`
+    FOREIGN KEY (`ID_Graduação`)
+    REFERENCES `escola`.`graduação` (`ID_graduacao`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `escola`.`equipamento`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `escola`.`equipamento` (
+  `ID_Equipamento` INT(11) NOT NULL,
+  `Nome` VARCHAR(45) NOT NULL,
+  `Quantidade` INT(11) NULL DEFAULT NULL,
+  PRIMARY KEY (`ID_Equipamento`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `escola`.`aluno_has_equipamento`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `escola`.`aluno_has_equipamento` (
+  `Aluno_Matrícula` INT(11) NOT NULL,
+  `Equipamento_ID` INT(11) NOT NULL,
+  PRIMARY KEY (`Aluno_Matrícula`, `Equipamento_ID`),
+  INDEX `fk_Aluno_has_Equipamento_Aluno1_idx` (`Aluno_Matrícula` ASC) VISIBLE,
+  INDEX `fk_equipa_idx` (`Equipamento_ID` ASC) VISIBLE,
+  CONSTRAINT `fk_Aluno_has_Equipamento_Aluno1`
+    FOREIGN KEY (`Aluno_Matrícula`)
+    REFERENCES `escola`.`aluno` (`Matrícula`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_equipa`
+    FOREIGN KEY (`Equipamento_ID`)
+    REFERENCES `escola`.`equipamento` (`ID_Equipamento`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `escola`.`departamento`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `escola`.`departamento` (
+  `Nome` VARCHAR(20) NOT NULL,
+  `Coordenador` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`Nome`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `escola`.`professor`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `escola`.`professor` (
+  `Matrícula` INT(11) NOT NULL,
+  `Nome` VARCHAR(45) NOT NULL,
+  `ID_Departamento` VARCHAR(20) NOT NULL,
+  PRIMARY KEY (`Matrícula`),
+  INDEX `fk_Professor_Departamento1_idx` (`ID_Departamento` ASC) VISIBLE,
+  CONSTRAINT `fk_Professor_Departamento1`
+    FOREIGN KEY (`ID_Departamento`)
+    REFERENCES `escola`.`departamento` (`Nome`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `escola`.`disciplina`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `escola`.`disciplina` (
+  `COD_Matéria` INT(50) NOT NULL,
+  `Nome` VARCHAR(40) NOT NULL,
+  `Pré_Requisitos` VARCHAR(45) NULL DEFAULT NULL,
+  `ID_Professor` INT(30) NOT NULL,
+  `Departamento_PK` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`COD_Matéria`),
+  INDEX `fk6_idx` (`ID_Professor` ASC) VISIBLE,
+  INDEX `fk7_idx` (`Departamento_PK` ASC) VISIBLE,
+  CONSTRAINT `fk6`
+    FOREIGN KEY (`ID_Professor`)
+    REFERENCES `escola`.`professor` (`Matrícula`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk7`
+    FOREIGN KEY (`Departamento_PK`)
+    REFERENCES `escola`.`departamento` (`Nome`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `escola`.`disciplina_has_aluno`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `escola`.`disciplina_has_aluno` (
+  `ID_Disciplina` INT(11) NOT NULL,
+  `Matr_Aluno` INT(11) NOT NULL,
+  PRIMARY KEY (`ID_Disciplina`, `Matr_Aluno`),
+  INDEX `fk_Disciplina_has_Aluno_Aluno1_idx` (`Matr_Aluno` ASC) VISIBLE,
+  INDEX `fk_Disciplina_has_Aluno_Disciplina1_idx` (`ID_Disciplina` ASC) VISIBLE,
+  CONSTRAINT `fk3`
+    FOREIGN KEY (`ID_Disciplina`)
+    REFERENCES `escola`.`disciplina` (`COD_Matéria`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Disciplina_has_Aluno_Aluno1`
+    FOREIGN KEY (`Matr_Aluno`)
+    REFERENCES `escola`.`aluno` (`Matrícula`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `escola`.`turma`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `escola`.`turma` (
+  `COD_Turma` INT(11) NOT NULL,
+  `Horário` VARCHAR(30) NOT NULL,
+  `Vagas` INT(11) NOT NULL,
+  `ID_Disciplina` INT(11) NOT NULL,
+  `Dia` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`COD_Turma`),
+  INDEX `fk9_idx` (`ID_Disciplina` ASC) VISIBLE,
+  CONSTRAINT `fk9`
+    FOREIGN KEY (`ID_Disciplina`)
+    REFERENCES `escola`.`disciplina` (`COD_Matéria`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `escola`.`monitor`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `escola`.`monitor` (
+  `Matrícula` INT(11) NOT NULL,
+  `Horário` VARCHAR(40) NOT NULL,
+  `Remuneração` VARCHAR(45) NULL DEFAULT NULL,
+  `Turma_COD` INT(11) NOT NULL,
+  PRIMARY KEY (`Matrícula`),
+  INDEX `fk1_idx` (`Turma_COD` ASC) VISIBLE,
+  CONSTRAINT `fk1`
+    FOREIGN KEY (`Turma_COD`)
+    REFERENCES `escola`.`turma` (`COD_Turma`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk2`
+    FOREIGN KEY (`Matrícula`)
+    REFERENCES `escola`.`aluno` (`Matrícula`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `escola`.`equipamento_has_monitor`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `escola`.`equipamento_has_monitor` (
+  `Equipamento_ID` INT(11) NOT NULL,
+  `Monitor_Matrícula` INT(11) NOT NULL,
+  PRIMARY KEY (`Equipamento_ID`, `Monitor_Matrícula`),
+  INDEX `fk_Equipamento_has_Monitor_Monitor1_idx` (`Monitor_Matrícula` ASC) VISIBLE,
+  INDEX `fk_Equipamento_has_Monitor_Equipamento1_idx` (`Equipamento_ID` ASC) VISIBLE,
+  CONSTRAINT `fk_Equipamento_has_Monitor_Monitor1`
+    FOREIGN KEY (`Monitor_Matrícula`)
+    REFERENCES `escola`.`monitor` (`Matrícula`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_braba`
+    FOREIGN KEY (`Equipamento_ID`)
+    REFERENCES `escola`.`equipamento` (`ID_Equipamento`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `escola`.`palestra`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `escola`.`palestra` (
+  `Nome` VARCHAR(45) NOT NULL,
+  `Apresentador` VARCHAR(45) NOT NULL,
+  `Data_` VARCHAR(40) NOT NULL,
+  `Horario` VARCHAR(40) NOT NULL,
+  `FK_Depart` VARCHAR(20) NOT NULL,
+  PRIMARY KEY (`Nome`),
+  INDEX `fk_palestra_departamento1_idx` (`FK_Depart` ASC) VISIBLE,
+  CONSTRAINT `fk_palestra_departamento1`
+    FOREIGN KEY (`FK_Depart`)
+    REFERENCES `escola`.`departamento` (`Nome`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `escola`.`plataforma`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `escola`.`plataforma` (
+  `Nome` VARCHAR(20) NOT NULL,
+  `Link` VARCHAR(45) NOT NULL,
+  `ID_Turma` INT(11) NOT NULL,
+  PRIMARY KEY (`Nome`),
+  UNIQUE INDEX `Link_UNIQUE` (`Link` ASC) VISIBLE,
+  INDEX `fk1_idx` (`ID_Turma` ASC) VISIBLE,
+  CONSTRAINT `]fk1`
+    FOREIGN KEY (`ID_Turma`)
+    REFERENCES `escola`.`turma` (`COD_Turma`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `escola`.`professor_has_equipamento`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `escola`.`professor_has_equipamento` (
+  `Professor_Matrícula` INT(11) NOT NULL,
+  `Equipamento_ID` INT(11) NOT NULL,
+  PRIMARY KEY (`Professor_Matrícula`, `Equipamento_ID`),
+  INDEX `fk_Professor_has_Equipamento_Professor1_idx` (`Professor_Matrícula` ASC) VISIBLE,
+  INDEX `fk_equipamento_idx` (`Equipamento_ID` ASC) VISIBLE,
+  CONSTRAINT `fk_Professor_has_Equipamento_Professor1`
+    FOREIGN KEY (`Professor_Matrícula`)
+    REFERENCES `escola`.`professor` (`Matrícula`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_equipamento`
+    FOREIGN KEY (`Equipamento_ID`)
+    REFERENCES `escola`.`equipamento` (`ID_Equipamento`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `escola`.`projeto de pesquisa`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `escola`.`projeto_de_pesquisa` (
+  `ID_Projeto` INT(11) NOT NULL,
+  `Nome` VARCHAR(45) NOT NULL,
+  `Professor_Matrícula` INT(11) NOT NULL,
+  PRIMARY KEY (`ID_Projeto`),
+  INDEX `fk_Projeto de Pesquisa_Professor1_idx` (`Professor_Matrícula` ASC) VISIBLE,
+  CONSTRAINT `fk_Projeto de Pesquisa_Professor1`
+    FOREIGN KEY (`Professor_Matrícula`)
+    REFERENCES `escola`.`professor` (`Matrícula`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+-- ------------------------------------------------
+-- π(turma.COD_Turma,disciplina,professor.Nome)[(turma |x|(ID_Disciplina=COD) disciplina) |x| (ID_Professor=Matrícula)professor]
+-- ------------------------------------------------
+
+
+	select turma.COD_Turma, disciplina.Nome as disciplina, professor.Nome 
+	from turma, disciplina,professor
+	where turma.ID_Disciplina = disciplina.COD_Matéria and disciplina.ID_Professor = professor.Matrícula;
+
+-- -----------------------------------------------------
+-- π(plataforma,plataforma.Link,disciplina,professor)[((plataforma |x|(ID_Turma=COD_Turma) turma) |x|(ID_Disciplina=COD_Matéria) disciplina) |x|(ID_Professor=Matrícula) professor]
+-- -----------------------------------------------------
+select plataforma.Nome as plataforma, plataforma.Link, disciplina.Nome as disciplina, professor.Nome as professor
+from plataforma, disciplina, professor, turma
+where plataforma.ID_Turma = turma.COD_Turma and turma.ID_Disciplina = disciplina.COD_Matéria and disciplina.ID_Professor = professor.Matrícula;
+
+-- ----------------------------------------------
+-- π(monitor.Horário,turma.COD_Turma,monitor)[(monitor |x|(Matrícula_monitor=Matrícula_aluno) aluno) |x|(TurmaCOD_monitor=TurmaCOD_turma) turma]
+-- ----------------------------------------------
+select monitor.Horário, turma.COD_Turma, aluno.Nome as monitor
+from monitor, turma, aluno
+where monitor.Matrícula = aluno.Matrícula and monitor.Turma_COD = turma.COD_Turma;
+
+
+-- ----------------------------------------------
+-- π(ID_Projeto,Nome_projeto,professor,departamento,coordenador) [(projeto_de_pesquisa |x|(Matrícula_prof=Matrícula.projeto_de_pesquisa) professor) |x|(ID_Departamento_prof=Nome_Departamento) departamento]
+-- ----------------------------------------------
+select projeto_de_pesquisa.ID_Projeto, projeto_de_pesquisa.Nome as projeto, professor.Nome as professor, departamento.Nome as departamento ,departamento.Coordenador
+from projeto_de_pesquisa, professor, departamento
+where projeto_de_pesquisa.Professor_Matrícula = professor.Matrícula and professor.ID_Departamento = departamento.Nome;
+
+-- ----------------------------------------------
+-- π (palestra,palestra_presentador,palestra_horar,departamento,professor)[(palestra |x|(palestra_Depart=Nome_Depart) departamento) |x|(Nome_Depart=ID_Depart_prof) professor]
+-- ----------------------------------------------
+select palestra.Nome as Palestra, palestra.Apresentador, palestra.Horario, departamento.Nome as Departamento, professor.Nome as Professor_Organizador
+from palestra,departamento, professor
+where palestra.FK_Depart=departamento.Nome and departamento.Nome = professor.ID_Departamento;
+
+        
+USE `escola` ;
+
+-- -----------------------------------------------------
+-- procedure addFilme
+-- -----------------------------------------------------
+
+DELIMITER $$
+USE `escola`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `addFilme`(in codFilme int, in titulo varchar(25), in codCat int)
+begin
+	insert into atividade.filme (codFilme, titulo, codCat) values (codFilme, titulo, codCat);
+end$$
+
+DELIMITER ;
+
+-- -----------------------------------------------------
+-- insert Disciplina 
+-- -----------------------------------------------------
+insert into escola.disciplina(COD_Matéria, Nome, Pré_Requisitos, ID_Professor, Departamento_PK) values(1508,'Mapeamento','Introdução a Geografia',16002654, 'Geografia')
+
+
+-- -----------------------------------------------------
+-- procedure addDepartamento
+-- -----------------------------------------------------
+
+delimiter //
+create procedure addDepartamento (in nome varchar(20), in coor varchar(45))
+begin
+	insert into escola.departamento (Nome, Coordenador) 
+    values (nome, coor);
+end //
+call addDepartamento("Biologia", "Marcos");
+
+
+-- -----------------------------------------------------
+-- procedure addprofessor
+-- -----------------------------------------------------
+delimiter //
+create procedure addProfessor (in matricula int, in Nome varchar(25), in ID_Departamento varchar(20))
+begin
+declare soma int;
+	IF (select Matrícula from professor where professor.Matrícula = matricula) = matricula then
+		while (select Matrícula from professor where professor.Matrícula = matricula) = matricula do
+			set  matricula = matricula + 1;
+		end while;
+	end if;
+	insert into escola.professor (Matrícula, Nome, ID_Departamento) 
+    values (matricula, Nome , ID_Departamento);
+end //
+drop procedure addProfessor
+call addProfessor(15002612,"Junior","CIC")
+
+-- -----------------------------------------------------
+-- view mecDisciplina
+-- -----------------------------------------------------
+
+create view escola.mecDisciplina as
+select disciplina.COD_Matéria, disciplina.Nome, disciplina.Pré_Requisitos, professor.Nome as ID_Professor, disciplina.Departamento_PK as Departamento_PK 
+from disciplina
+join professor
+on disciplina.ID_professor = professor.Matrícula;
+select * from escola.mecDisciplina
+
+describe disciplina
+
+-- -----------------------------------------------------
+-- insert para popular o bando de todas as tabelas
+-- -----------------------------------------------------
+
+insert into graduação(ID_graduacao,Nome) values(1,"Graduação");
+insert into graduação(ID_graduacao,Nome) values(2,"Pós-Graduação");
+insert into graduação(ID_graduacao,Nome) values(3,"Mestrado");
+insert into graduação(ID_graduacao,Nome) values(4,"Doutorado");
+insert into graduação(ID_graduacao,Nome) values(5,"Pós-Doutorado");
+
+
+insert into aluno(Matrícula,Nome,Estagio,ID_Graduação) values(180035069,'Ana Maria','Não Possui',1);
+insert into aluno(Matrícula,Nome,Estagio,ID_Graduação) values(170169487,'Allann Rodrigues','Senado',2);
+insert into aluno(Matrícula,Nome,Estagio,ID_Graduação) values(170084689,'Gabriela Meira','COFEN',1);
+insert into aluno(Matrícula,Nome,Estagio,ID_Graduação) values(160113468,'Junior Soares','Não Possui',3);
+insert into aluno(Matrícula,Nome,Estagio,ID_Graduação) values(160067897,'Samuel Diniz','Não Possui',4);
+
+insert into equipamento(ID_Equipamento,Nome,Quantidade) values(1,'Cabo HDMI',8);
+insert into equipamento(ID_Equipamento,Nome,Quantidade) values(2,'Adaptador De Tomada',15);
+insert into equipamento(ID_Equipamento,Nome,Quantidade) values(3,'Webcam',7);
+insert into equipamento(ID_Equipamento,Nome,Quantidade) values(4,'Chip de Internet',25);
+insert into equipamento(ID_Equipamento,Nome,Quantidade) values(5,'Mouse',13);
+
+insert into turma(COD_Turma,Horário,Vagas,ID_Disciplina,Dia) values(1002,'08:00 as 09:40',33,4812,'seg - quar');
+insert into turma(COD_Turma,Horário,Vagas,ID_Disciplina,Dia) values(1030,'14:00 as 15:40',33,3018,'quar - sex');
+insert into turma(COD_Turma,Horário,Vagas,ID_Disciplina,Dia) values(1032,'19:00 as 20:40',33,3006,'ter - quin');
+insert into turma(COD_Turma,Horário,Vagas,ID_Disciplina,Dia) values(1047,'08:00 as 11:40',33,2005,'sabado');
+insert into turma(COD_Turma,Horário,Vagas,ID_Disciplina,Dia) values(1078,'16:00 as 17:40',33,7546,'seq - quin');
+
+insert into monitor(Matrícula,Horário,Remuneração,Turma_COD) values(180035069,'12:00 as 14:00','Sim',1078);
+insert into monitor(Matrícula,Horário,Remuneração,Turma_COD) values(170169487,'18:00 as 19:00','Não',1032);
+insert into monitor(Matrícula,Horário,Remuneração,Turma_COD) values(170084689,'16:00 as 18:00','Não',1030);
+insert into monitor(Matrícula,Horário,Remuneração,Turma_COD) values(160113468,'12:00 as 14:00','Não',1047);
+insert into monitor(Matrícula,Horário,Remuneração,Turma_COD) values(160067897,'10:00 as 11:40','Sim',1002);
+
+insert into plataforma(Nome,Link,ID_Turma) values('Teams','https://teams.microsoft.com/',1002);
+insert into plataforma(Nome,Link,ID_Turma) values('Zoom','https://zoom.us/join',1030);
+insert into plataforma(Nome,Link,ID_Turma) values('Skype','https://web.skype.com/',1032);
+insert into plataforma(Nome,Link,ID_Turma) values('Discord','https://discord.com/',1047);
+insert into plataforma(Nome,Link,ID_Turma) values('Facebook','https://www.facebook.com/live/producer/',1078);
+
+insert into palestra(Nome,Apresentador,Data_,Horario,FK_Depart) values('O Poder da Mente','Gustavo Lima','25/02/2021','15:30','Pedagogia');
+insert into palestra(Nome,Apresentador,Data_,Horario,FK_Depart) values('A Arte de Ser Leve',' Leila Ferreira','15/04/2021','17:30','Geografia');
+insert into palestra(Nome,Apresentador,Data_,Horario,FK_Depart) values('Museologia','Jonata Henrique','08/05/2021','10:30','Historia');
+insert into palestra(Nome,Apresentador,Data_,Horario,FK_Depart) values('Pensamento De Programador','Allann Hoffmann','25/02/2021','15:30','CIC');
+insert into palestra(Nome,Apresentador,Data_,Horario,FK_Depart) values('Subconsciente','Leo Santana','13/10/2021','18:00','Estatistica');
+
+insert into projeto_de_pesquisa(ID_Projeto,Nome,Professor_Matrícula) values(12,'Criptação de Dados',14002680);
+insert into projeto_de_pesquisa(ID_Projeto,Nome,Professor_Matrícula) values(13,'Oficina a distancia',15002612);
+insert into projeto_de_pesquisa(ID_Projeto,Nome,Professor_Matrícula) values(14,'Direitos Trabalhistas para Pedreiros',16002654);
+insert into projeto_de_pesquisa(ID_Projeto,Nome,Professor_Matrícula) values(15,'Letramento infantil',18002615);
+insert into projeto_de_pesquisa(ID_Projeto,Nome,Professor_Matrícula) values(16,'Desenvolvimento Aplicativos Geograficos',17002636);
+
+
+insert into aluno_has_equipamento (Aluno_Matrícula, Equipamento_ID) values (180035069,1);
+insert into aluno_has_equipamento (Aluno_Matrícula, Equipamento_ID) values (170169487,2);
+insert into aluno_has_equipamento (Aluno_Matrícula, Equipamento_ID) values (170084689,3);
+insert into aluno_has_equipamento (Aluno_Matrícula, Equipamento_ID) values (160113468,4);
+insert into aluno_has_equipamento (Aluno_Matrícula, Equipamento_ID) values (160067897,5);
+
+
+insert into professor_has_equipamento (Professor_Matrícula,Equipamento_ID) values (14002680,1);
+insert into professor_has_equipamento (Professor_Matrícula,Equipamento_ID) values (15002612,2);
+insert into professor_has_equipamento (Professor_Matrícula,Equipamento_ID) values (16002654,3);
+insert into professor_has_equipamento (Professor_Matrícula,Equipamento_ID) values (17002636,4);
+insert into professor_has_equipamento (Professor_Matrícula,Equipamento_ID) values (18002615,5);
+
+insert into equipamento_has_monitor (Equipamento_ID,Monitor_Matrícula) values (1,180035069);
+insert into equipamento_has_monitor (Equipamento_ID,Monitor_Matrícula) values (2,170169487);
+insert into equipamento_has_monitor (Equipamento_ID,Monitor_Matrícula) values (3,170084689);
+insert into equipamento_has_monitor (Equipamento_ID,Monitor_Matrícula) values (4,160113468);
+insert into equipamento_has_monitor (Equipamento_ID,Monitor_Matrícula) values (5,160067897);
+
+select * from disciplina_has_aluno;
+insert into disciplina_has_aluno (ID_Disciplina,Matr_Aluno) values (4812,180035069);
+insert into disciplina_has_aluno (ID_Disciplina,Matr_Aluno) values (2005,170169487);
+insert into disciplina_has_aluno (ID_Disciplina,Matr_Aluno) values (7546,170084689);
+insert into disciplina_has_aluno (ID_Disciplina,Matr_Aluno) values (3006,160113468);
+insert into disciplina_has_aluno (ID_Disciplina,Matr_Aluno) values (3018,160067897);
+
+
+-- -----------------------------------------------------
+-- select de todas as tabelas para conferir se esta populada
+-- -----------------------------------------------------
+
+select * from aluno;
+select * from departamento;
+select * from disciplina;
+select * from equipamento;
+select * from graduação;
+select * from monitor;
+select * from palestra;
+select * from plataforma;
+select * from professor;
+select * from projeto_de_pesquisa;
+select * from turma;
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

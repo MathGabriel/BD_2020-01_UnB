@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>CRUD Nodejs Mysql</title>
+    <link rel="stylesheet" href="https://bootswatch.com/4/sketchy/bootstrap.min.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="/">Departamento</a>
+        <a class="navbar-brand" href="/prof">Professor</a>
+        <a class="navbar-brand" href="/disc">Disciplina</a>
+    </nav>
+    <br>
+    <h5>
+        <p style="margin-left: 25px;">Disciplina:</p>
+    </h5>
+    <div class="container">
+        <div class="row mt-4">
+            <div class="col-md-13">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>nº</th>
+                            <th>COD Matéria</th>
+                            <th>Nome da Disciplina</th>
+                            <th>Pré-Requisitos</th>
+                            <th>Nome do Professor</th>
+                            <th>Nome do Departamento</th>
+                            <th>Opção</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (data) { %>
+                        <% for(var i = 0; i < data.length; i++) { %>
+                        <tr>
+                            <td><%= (i + 1) %></td>
+                            <td><%= data[i].COD_Matéria %></td>
+                            <td><%= data[i].Nome %></td>
+                            <td><%= data[i].Pré_Requisitos %></td>
+                            <td><%= data[i].ID_Professor %></td>
+                            <td><%= data[i].Departamento_PK %></td>
+                            <td>
+                                <a href="/disc/delete/<%= data[i].COD_Matéria %>" class="btn btn-danger">Delete</a>
+                                <a href="/disc/update/<%= data[i].COD_Matéria %>" class="btn btn-info"> Update</a>
+                            </td>
+                        </tr>
+
+                        <% } %>
+                        <% } %>
+
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-7">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>
+                            <p style="margin-left: 25px;">Create</p>
+                        </h5>
+                        <form action="/disc/add" method="post">
+                            <div class="form-group">
+                                <input type="text" name="COD_Matéria" placeholder="COD_Matéria" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="Nome" placeholder="Nome Disciplina" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="Pré_Requisitos" placeholder="Pré_Requisitos" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="ID_Professor" placeholder="Matrícula Professor" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="Departamento_PK" placeholder="Departamento" class="form-control">
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                Save Customer
+                            </button>
+                        <form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>

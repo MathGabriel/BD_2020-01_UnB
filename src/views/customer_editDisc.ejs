@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>CRUD Nodejs Mysql</title>
+    <link rel="stylesheet" href="https://bootswatch.com/4/sketchy/bootstrap.min.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="/disc">Disciplina</a>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-5">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>
+                            <p style="margin-left: 25px;">Update</p>
+                        </h5>
+                        <form action="/disc/update/<%= data.COD_Matéria %>" method="post">
+                            <div class="form-group">
+                                <input type="text" name="COD_Matéria" value="<%= data.COD_Matéria %>"  class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="Nome" value="<%= data.Nome %>" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="Pré_Requisitos" value="<%= data.Pré_Requisitos %>" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="ID_Professor" value="<%= data.ID_Professor %>" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="Departamento_PK" value="<%= data.Departamento_PK %>" class="form-control">
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                Save Customer
+                            </button>
+                        <form>
+                    </div>
+                </div>    
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

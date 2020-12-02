@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>CRUD Nodejs Mysql</title>
+    <link rel="stylesheet" href="https://bootswatch.com/4/sketchy/bootstrap.min.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="/">Departamento</a>
+        <a class="navbar-brand" href="/prof">Professor</a>
+        <a class="navbar-brand" href="/disc">Disciplina</a>
+    </nav>
+    <br>
+    <h5>
+        <p style="margin-left: 25px;">Professor:</p>
+    </h5>
+    <div class="container">
+        <div class="row mt-4">
+            <div class="col-md-7">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>nº</th>
+                            <th>Matrícula</th>
+                            <th>Nome do Professor</th>
+                            <th>Nome do Departamento</th>
+                            <th>Opção</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (data) { %>
+                        <% for(var i = 0; i < data.length; i++) { %>
+                        <tr>
+                            <td><%= (i + 1) %></td>
+                            <td><%= data[i].Matrícula %></td>
+                            <td><%= data[i].Nome %></td>
+                            <td><%= data[i].ID_Departamento %></td>
+                            <td>
+                                <a href="/prof/delete/<%= data[i].Nome %>" class="btn btn-danger">Delete</a>
+                                <a href="/prof/update/<%= data[i].Nome %>" class="btn btn-info"> Update</a>
+                            </td>
+                        </tr>
+
+                        <% } %>
+                        <% } %>
+
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-5">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>
+                            <p style="margin-left: 25px;">Create</p>
+                        </h5>
+                        <form action="/prof/add" method="post">
+                            <div class="form-group">
+                                <input type="text" name="Matrícula" placeholder="Matrícula" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="Nome" placeholder="Nome" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" name="ID_Departamento" placeholder="Departamento" class="form-control">
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                Save Customer
+                            </button>
+                        <form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>
